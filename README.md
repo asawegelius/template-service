@@ -26,6 +26,10 @@ This is a reusable template for modules and microservices (Spring Boot 3, Java 2
 - Global exception handler prepared
 - Spock unit test
 
+## To configure Prometheus / Grafana
+
+Actuator endpoints already exposed! Add Prometheus dependency if you need more metrics.
+
 ---
 
 ## License
