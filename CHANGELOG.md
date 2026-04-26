@@ -6,15 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-04-26
+
 ### Added
-- Bootstrap flavor support for `persistence` and `generic`
-- Error-code starter that keeps API error responses and structured logs aligned
-- Structured logging starter using Spring Boot's built-in ECS console format
-- Request correlation ID filter that propagates `X-Correlation-Id` and enriches MDC with request context
 - Cross-platform GitHub Actions test matrix for Ubuntu and Windows
 - Machine-readable `template-origin.properties` output from the bootstrap scripts
 - Optional bootstrap arguments for service slug and base package
 - Automatic source-tree and application-class retargeting during bootstrap
+- Structured logging starter using Spring Boot's built-in ECS console format
+- Request correlation ID filter that propagates `X-Correlation-Id` and enriches MDC with request context
+- Error-code starter that keeps API error responses and structured logs aligned
+- Bootstrap flavor support for `persistence` and `generic`
+
+### Changed
+- Bootstrap scripts now write both a human-readable README note and a machine-readable provenance file
+- The template codebase uses more generic application class names so generated projects need less manual cleanup
+
+## [1.1.0] - 2026-04-26
+
+### Added
 - GitHub Actions build workflow
 - Dependabot configuration
 - Liquibase starter changelog
@@ -25,8 +35,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Bootstrap scripts now record the source template tag or commit in the generated `README.md`
 
 ### Changed
-- Bootstrap scripts now write both a human-readable README note and a machine-readable provenance file
-- The template codebase uses more generic application class names so generated projects need less manual cleanup
 - Updated to Spring Boot 3.5.11
 - Updated springdoc to 2.8.17
 - Updated Spock to 2.4 for Groovy 4
@@ -34,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Switched the template defaults to Liquibase-managed persistence with safer JPA and Actuator settings
 - Hardened the default exception handling so client responses use safe error payloads
 - Cleaned the bootstrap scripts and template documentation
+- Tracked the Gradle wrapper jar and executable wrapper script so CI works reliably
 
 ### Removed
 - Tracked Gradle cache files from the repository
