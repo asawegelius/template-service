@@ -25,3 +25,18 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+
+app:
+  logging:
+    correlation-id-header: ${CORRELATION_ID_HEADER:X-Correlation-Id}
+
+logging:
+  level:
+    root: INFO
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        version: ${SERVICE_VERSION:${spring.application.version:1.0.0-SNAPSHOT}}
+        environment: ${SERVICE_ENVIRONMENT:local}
