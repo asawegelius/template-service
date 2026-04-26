@@ -10,6 +10,8 @@ Reusable Spring Boot service template for Java 21 projects.
 - Liquibase with an empty starter changelog
 - OpenAPI / Swagger UI
 - H2 for local development and PostgreSQL driver for service deployments
+- Structured JSON logging to stdout using Spring Boot's built-in ECS format
+- Request correlation ID starter with `X-Correlation-Id` propagation
 - Spock-based test setup
 - Bootstrap scripts for creating a fresh project from the template
 - GitHub Actions build workflow and Dependabot configuration
@@ -80,6 +82,9 @@ git push -u origin main
 - JPA schema auto-update is disabled by default.
 - Liquibase points to [master.yaml](src/main/resources/db/changelog/master.yaml).
 - Global exception handling returns safe default error messages instead of raw exception text.
+- Console logs use Spring Boot structured logging in ECS JSON format.
+- Incoming `X-Correlation-Id` is reused when present, otherwise one is generated and returned in the response.
+- Request-scoped `correlation_id`, `http_method`, and `request_path` are added to MDC so they appear in structured logs.
 - The template is meant to be a solid starting point, not a final production policy.
 
 ## License
