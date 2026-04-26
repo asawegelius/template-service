@@ -9,6 +9,8 @@ if (-not $ProjectName) {
 
 Write-Output "Bootstrapping new project: $ProjectName"
 $templateReference = "unknown-template-reference"
+$templateRepository = "unknown-template-repository"
+$bootstrapTimestampUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
 if (Test-Path ".git") {
     try {
@@ -18,6 +20,15 @@ if (Test-Path ".git") {
         }
     } catch {
         $templateReference = "unknown-template-reference"
+    }
+
+    try {
+        $templateRepository = (git config --get remote.origin.url 2>$null).Trim()
+        if (-not $templateRepository) {
+            $templateRepository = "unknown-template-repository"
+        }
+    } catch {
+        $templateRepository = "unknown-template-repository"
     }
 }
 
@@ -33,10 +44,22 @@ if (Test-Path "README.md") {
     Remove-Item README.md
 }
 
+$provenanceLines = @(
+    "template.name=template-service",
+    "template.reference=$templateReference",
+    "template.repository=$templateRepository",
+    "template.bootstrapped_at_utc=$bootstrapTimestampUtc",
+    "template.bootstrap_script=bootstrap-new-project.ps1"
+)
+
+$provenanceLines | Out-File -Encoding utf8 template-origin.properties
+Write-Output "template-origin.properties created."
+
 $readmeLines = @(
     "# $ProjectName",
     "",
     "Bootstrapped from template-service ($templateReference).",
+    "Template provenance is recorded in `template-origin.properties`.",
     "",
     "Replace this README with project-specific documentation."
 )

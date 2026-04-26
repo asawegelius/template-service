@@ -18,7 +18,8 @@ Reusable Spring Boot service template for Java 21 projects.
 
 - This template should be released with Git tags using `vMAJOR.MINOR.PATCH`.
 - [CHANGELOG.md](CHANGELOG.md) is the human-readable record of what changed between template releases.
-- The bootstrap scripts preserve the source template reference in the generated `README.md` so a new project can later see which template version or commit it came from.
+- The bootstrap scripts preserve a human-readable summary in the generated `README.md`.
+- The bootstrap scripts also generate `template-origin.properties`, which gives a machine-readable record of the source template tag or commit.
 - Before recommending the template for wider reuse, cut a tag from a merged and stable branch.
 
 ## Creating a New Project from This Template
@@ -47,6 +48,7 @@ Windows PowerShell:
 The bootstrap script:
 
 - removes the old Git history
+- records template provenance in `template-origin.properties`
 - records the source template tag or commit in the new `README.md`
 - replaces the README with a new project title
 - initializes a fresh Git repository
