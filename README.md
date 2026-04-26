@@ -85,6 +85,7 @@ git push -u origin main
 - Console logs use Spring Boot structured logging in ECS JSON format.
 - Incoming `X-Correlation-Id` is reused when present, otherwise one is generated and returned in the response.
 - Request-scoped `correlation_id`, `http_method`, and `request_path` are added to MDC so they appear in structured logs.
+- Error responses include stable `error_code` and `correlation_id` fields, and the same `error_code` is written to logs through MDC.
 - The template is meant to be a solid starting point, not a final production policy.
 
 ## License
