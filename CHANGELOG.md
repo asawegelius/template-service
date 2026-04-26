@@ -7,15 +7,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Initial template project structure
-- Bootstrap project scripts (`bootstrap-new-project.sh`, `bootstrap-new-project.ps1`)
+- GitHub Actions build workflow
+- Dependabot configuration
+- Liquibase starter changelog
+- PostgreSQL runtime driver alongside the in-memory H2 default
+- Validation starter dependency
+- Basic Spock smoke test
+- Template versioning notes in the README
+- Bootstrap scripts now record the source template tag or commit in the generated `README.md`
 
 ### Changed
-- Updated to Spring Boot 3.4
-- Updated to Java 21
+- Updated to Spring Boot 3.5.11
+- Updated springdoc to 2.8.17
+- Updated Spock to 2.4 for Groovy 4
+- Updated the Gradle wrapper to 8.14.4
+- Switched the template defaults to Liquibase-managed persistence with safer JPA and Actuator settings
+- Hardened the default exception handling so client responses use safe error payloads
+- Cleaned the bootstrap scripts and template documentation
+
+### Removed
+- Tracked Gradle cache files from the repository
 
 ### Fixed
-- N/A
+- Stopped returning raw server exception messages to API clients by default
 
 ---
 
