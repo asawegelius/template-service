@@ -4,7 +4,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
 
 @SpringBootTest
-class TemplateServiceApplicationSpec extends Specification {
+class ApplicationSpec extends Specification {
 
     def "context loads"() {
         expect:

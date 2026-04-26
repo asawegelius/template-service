@@ -12,8 +12,8 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title(TemplateServiceConfig.SWAGGER_TITLE)
-                        .version(TemplateServiceConfig.SWAGGER_VERSION)
-                        .description(TemplateServiceConfig.SWAGGER_DESCRIPTION));
+                        .title(ApplicationMetadata.SWAGGER_TITLE)
+                        .version(ApplicationMetadata.SWAGGER_VERSION)
+                        .description(ApplicationMetadata.SWAGGER_DESCRIPTION));
     }
 }
