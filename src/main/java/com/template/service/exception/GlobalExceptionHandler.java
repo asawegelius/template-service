@@ -7,8 +7,13 @@ import org.springframework.http.ResponseEntity;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("Bad request"));
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        return ResponseEntity.internalServerError().body(new ErrorResponse("Internal server error"));
     }
 }

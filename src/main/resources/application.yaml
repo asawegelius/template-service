@@ -3,15 +3,19 @@ spring:
     name: ${SERVICE_NAME:template-service}
 
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DB_URL:jdbc:h2:mem:template-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/master.yaml
 
 management:
   endpoints:
@@ -20,4 +24,4 @@ management:
         include: health, info, metrics
   endpoint:
     health:
-      show-details: always
+      show-details: when_authorized
