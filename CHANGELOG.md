@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Bootstrap flavor support for `persistence` and `generic`
 - Error-code starter that keeps API error responses and structured logs aligned
 - Structured logging starter using Spring Boot's built-in ECS console format
 - Request correlation ID filter that propagates `X-Correlation-Id` and enriches MDC with request context
