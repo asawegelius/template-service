@@ -16,9 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class CorrelationIdFilter extends OncePerRequestFilter {
 
-    static final String CORRELATION_ID_MDC_KEY = "correlation_id";
-    static final String HTTP_METHOD_MDC_KEY = "http_method";
-    static final String REQUEST_PATH_MDC_KEY = "request_path";
+    public static final String CORRELATION_ID_MDC_KEY = "correlation_id";
+    public static final String HTTP_METHOD_MDC_KEY = "http_method";
+    public static final String REQUEST_PATH_MDC_KEY = "request_path";
 
     private final String correlationIdHeader;
 
