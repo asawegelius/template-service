@@ -8,6 +8,18 @@ if (-not $ProjectName) {
 }
 
 Write-Output "Bootstrapping new project: $ProjectName"
+$templateReference = "unknown-template-reference"
+
+if (Test-Path ".git") {
+    try {
+        $templateReference = (git describe --tags --always 2>$null).Trim()
+        if (-not $templateReference) {
+            $templateReference = (git rev-parse --short HEAD 2>$null).Trim()
+        }
+    } catch {
+        $templateReference = "unknown-template-reference"
+    }
+}
 
 if (Test-Path ".git") {
     Write-Output "Removing old Git history..."
@@ -21,7 +33,15 @@ if (Test-Path "README.md") {
     Remove-Item README.md
 }
 
-"# $ProjectName" | Out-File -Encoding utf8 README.md
+$readmeLines = @(
+    "# $ProjectName",
+    "",
+    "Bootstrapped from template-service ($templateReference).",
+    "",
+    "Replace this README with project-specific documentation."
+)
+
+$readmeLines | Out-File -Encoding utf8 README.md
 Write-Output "New README.md created."
 
 git init

@@ -7,10 +7,12 @@ if [ -z "$1" ]; then
 fi
 
 PROJECT_NAME="$1"
+TEMPLATE_REFERENCE="unknown-template-reference"
 
 echo "Bootstrapping new project: $PROJECT_NAME"
 
 if [ -d ".git" ]; then
+  TEMPLATE_REFERENCE="$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo unknown-template-reference)"
   echo "Removing old Git history..."
   rm -rf .git
 else
@@ -22,7 +24,14 @@ if [ -f "README.md" ]; then
   rm README.md
 fi
 
-echo "# $PROJECT_NAME" > README.md
+cat > README.md <<EOF
+# $PROJECT_NAME
+
+Bootstrapped from template-service ($TEMPLATE_REFERENCE).
+
+Replace this README with project-specific documentation.
+EOF
+
 echo "New README.md created."
 
 git init

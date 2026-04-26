@@ -14,6 +14,13 @@ Reusable Spring Boot service template for Java 21 projects.
 - Bootstrap scripts for creating a fresh project from the template
 - GitHub Actions build workflow and Dependabot configuration
 
+## Template Versioning
+
+- This template should be released with Git tags using `vMAJOR.MINOR.PATCH`.
+- [CHANGELOG.md](CHANGELOG.md) is the human-readable record of what changed between template releases.
+- The bootstrap scripts preserve the source template reference in the generated `README.md` so a new project can later see which template version or commit it came from.
+- Before recommending the template for wider reuse, cut a tag from a merged and stable branch.
+
 ## Creating a New Project from This Template
 
 1. Clone this repository into a temporary folder:
@@ -40,6 +47,7 @@ Windows PowerShell:
 The bootstrap script:
 
 - removes the old Git history
+- records the source template tag or commit in the new `README.md`
 - replaces the README with a new project title
 - initializes a fresh Git repository
 - creates the first clean commit
