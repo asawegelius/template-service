@@ -2,13 +2,14 @@
 set -e
 
 if [ -z "$1" ]; then
-  echo "Usage: ./bootstrap-new-project.sh 'Your New Project Name' [service-slug] [com.example.base.package]"
+  echo "Usage: ./bootstrap-new-project.sh 'Your New Project Name' [service-slug] [com.example.base.package] [persistence|generic]"
   exit 1
 fi
 
 PROJECT_NAME="$1"
 SERVICE_SLUG="$2"
 BASE_PACKAGE="$3"
+TEMPLATE_FLAVOR="${4:-persistence}"
 TEMPLATE_REFERENCE="unknown-template-reference"
 TEMPLATE_REPOSITORY="unknown-template-repository"
 BOOTSTRAP_TIMESTAMP_UTC="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
@@ -66,6 +67,23 @@ move_package_directory() {
   fi
 }
 
+remove_template_section() {
+  local file="$1"
+  local start_marker="$2"
+  local end_marker="$3"
+
+  if [ ! -f "$file" ]; then
+    return
+  fi
+
+  awk -v start="$start_marker" -v end="$end_marker" '
+    index($0, start) { skip=1; next }
+    index($0, end) { skip=0; next }
+    !skip { print }
+  ' "$file" > "$file.tmp"
+  mv "$file.tmp" "$file"
+}
+
 if [ -z "$SERVICE_SLUG" ]; then
   SERVICE_SLUG="$(slugify "$PROJECT_NAME")"
 fi
@@ -76,6 +94,11 @@ fi
 
 if [[ ! "$BASE_PACKAGE" =~ ^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$ ]]; then
   echo "Base package must be a valid Java package name."
+  exit 1
+fi
+
+if [[ "$TEMPLATE_FLAVOR" != "persistence" && "$TEMPLATE_FLAVOR" != "generic" ]]; then
+  echo "Template flavor must be either 'persistence' or 'generic'."
   exit 1
 fi
 
@@ -128,6 +151,12 @@ replace_in_file "$MAIN_JAVA_PATH/$APPLICATION_CLASS_NAME.java" 'public class App
 replace_in_file "$MAIN_JAVA_PATH/$APPLICATION_CLASS_NAME.java" 'SpringApplication.run(Application.class, args);' "SpringApplication.run($APPLICATION_CLASS_NAME.class, args);"
 replace_in_file "$TEST_GROOVY_PATH/$APPLICATION_SPEC_NAME.groovy" 'class ApplicationSpec extends Specification' "class $APPLICATION_SPEC_NAME extends Specification"
 
+if [ "$TEMPLATE_FLAVOR" = "generic" ]; then
+  remove_template_section "build.gradle" "// TEMPLATE-PERSISTENCE-START" "// TEMPLATE-PERSISTENCE-END"
+  remove_template_section "src/main/resources/application.yaml" "# TEMPLATE-PERSISTENCE-START" "# TEMPLATE-PERSISTENCE-END"
+  rm -rf src/main/resources/db
+fi
+
 cat > template-origin.properties <<EOF
 template.name=template-service
 template.reference=$TEMPLATE_REFERENCE
@@ -137,6 +166,7 @@ template.bootstrap_script=bootstrap-new-project.sh
 generated.project_name=$PROJECT_NAME
 generated.service_slug=$SERVICE_SLUG
 generated.base_package=$BASE_PACKAGE
+generated.template_flavor=$TEMPLATE_FLAVOR
 EOF
 
 echo "template-origin.properties created."
@@ -144,6 +174,7 @@ echo "template-origin.properties created."
 cat > README.md <<EOF
 # $PROJECT_NAME
 
+Template flavor: \`$TEMPLATE_FLAVOR\`
 Service slug: \`$SERVICE_SLUG\`
 Base package: \`$BASE_PACKAGE\`
 

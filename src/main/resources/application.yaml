@@ -2,6 +2,7 @@ spring:
   application:
     name: ${SERVICE_NAME:template-service}
 
+  # TEMPLATE-PERSISTENCE-START
   datasource:
     url: ${DB_URL:jdbc:h2:mem:template-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE}
     driver-class-name: ${DB_DRIVER:org.h2.Driver}
@@ -16,6 +17,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml
+  # TEMPLATE-PERSISTENCE-END
 
 management:
   endpoints:

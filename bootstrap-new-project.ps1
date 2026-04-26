@@ -1,11 +1,13 @@
 param (
     [string]$ProjectName,
     [string]$ServiceSlug,
-    [string]$BasePackage
+    [string]$BasePackage,
+    [ValidateSet("persistence", "generic")]
+    [string]$TemplateFlavor = "persistence"
 )
 
 if (-not $ProjectName) {
-    Write-Output "Usage: ./bootstrap-new-project.ps1 'Your New Project Name' [-ServiceSlug 'your-service-slug'] [-BasePackage 'com.example.your.service']"
+    Write-Output "Usage: ./bootstrap-new-project.ps1 'Your New Project Name' [-ServiceSlug 'your-service-slug'] [-BasePackage 'com.example.your.service'] [-TemplateFlavor 'persistence|generic']"
     exit 1
 }
 
@@ -105,6 +107,41 @@ function Remove-EmptyDirectoryChain {
         Remove-Item -Force $current
         $current = Split-Path $current -Parent
     }
+}
+
+function Remove-TemplateSection {
+    param (
+        [string]$Path,
+        [string]$StartMarker,
+        [string]$EndMarker
+    )
+
+    if (-not (Test-Path $Path)) {
+        return
+    }
+
+    $lines = Get-Content $Path
+    $result = New-Object System.Collections.Generic.List[string]
+    $skip = $false
+
+    foreach ($line in $lines) {
+        $trimmed = $line.Trim()
+        if ($trimmed -eq $StartMarker) {
+            $skip = $true
+            continue
+        }
+
+        if ($trimmed -eq $EndMarker) {
+            $skip = $false
+            continue
+        }
+
+        if (-not $skip) {
+            $result.Add($line)
+        }
+    }
+
+    [System.IO.File]::WriteAllLines($Path, $result, [System.Text.UTF8Encoding]::new($false))
 }
 
 if (-not $ServiceSlug) {
@@ -216,6 +253,15 @@ Replace-InFile $renamedApplicationSourceFile "public class Application" "public 
 Replace-InFile $renamedApplicationSourceFile "SpringApplication.run(Application.class, args);" "SpringApplication.run($applicationClassName.class, args);"
 Replace-InFile $renamedApplicationSpecFile "class ApplicationSpec extends Specification" "class $applicationSpecName extends Specification"
 
+if ($TemplateFlavor -eq "generic") {
+    Remove-TemplateSection "build.gradle" "// TEMPLATE-PERSISTENCE-START" "// TEMPLATE-PERSISTENCE-END"
+    Remove-TemplateSection "src/main/resources/application.yaml" "# TEMPLATE-PERSISTENCE-START" "# TEMPLATE-PERSISTENCE-END"
+
+    if (Test-Path "src/main/resources/db") {
+        Remove-Item -Recurse -Force "src/main/resources/db"
+    }
+}
+
 $provenanceLines = @(
     "template.name=template-service",
     "template.reference=$templateReference",
@@ -224,7 +270,8 @@ $provenanceLines = @(
     "template.bootstrap_script=bootstrap-new-project.ps1",
     "generated.project_name=$ProjectName",
     "generated.service_slug=$ServiceSlug",
-    "generated.base_package=$BasePackage"
+    "generated.base_package=$BasePackage",
+    "generated.template_flavor=$TemplateFlavor"
 )
 
 [System.IO.File]::WriteAllLines("template-origin.properties", $provenanceLines, [System.Text.UTF8Encoding]::new($false))
@@ -233,6 +280,7 @@ Write-Output "template-origin.properties created."
 $readmeLines = @(
     "# $ProjectName",
     "",
+    "Template flavor: ``$TemplateFlavor``",
     "Service slug: ``$ServiceSlug``",
     "Base package: ``$BasePackage``",
     "",

@@ -13,6 +13,7 @@ Reusable Spring Boot service template for Java 21 projects.
 - Structured JSON logging to stdout using Spring Boot's built-in ECS format
 - Request correlation ID starter with `X-Correlation-Id` propagation
 - Spock-based test setup
+- Bootstrap support for both `persistence` and `generic` service flavors
 - Bootstrap scripts for creating a fresh project from the template
 - GitHub Actions build workflow and Dependabot configuration
 
@@ -38,17 +39,20 @@ cd temp-template-service
 Linux/macOS/WSL:
 
 ```bash
-./bootstrap-new-project.sh "Your New Project Name" "your-service-slug" "com.example.your.service"
+./bootstrap-new-project.sh "Your New Project Name" "your-service-slug" "com.example.your.service" "persistence"
 ```
 
 Windows PowerShell:
 
 ```powershell
-./bootstrap-new-project.ps1 "Your New Project Name" -ServiceSlug "your-service-slug" -BasePackage "com.example.your.service"
+./bootstrap-new-project.ps1 "Your New Project Name" -ServiceSlug "your-service-slug" -BasePackage "com.example.your.service" -TemplateFlavor "persistence"
 ```
 
 The bootstrap script:
 
+- supports two bootstrap flavors:
+  - `persistence` keeps JPA, Liquibase, datasource config, and the starter changelog
+  - `generic` removes the persistence-specific dependencies and config during bootstrap
 - removes the old Git history
 - can derive a sensible service slug and base package if you do not pass them explicitly
 - moves the Java and test source trees to the chosen base package
@@ -71,11 +75,13 @@ git push -u origin main
 
 ## First Things To Change
 
-1. Prefer passing `-ServiceSlug` / `-BasePackage` or the equivalent bash arguments when you bootstrap the project.
-2. Review [ApplicationMetadata.java](src/main/java/com/template/service/config/ApplicationMetadata.java) for service-specific values.
-3. Review [application.yaml](src/main/resources/application.yaml) for environment-specific defaults.
-4. Replace the empty Liquibase starter changelog with your actual schema plan.
-5. Add or remove dependencies based on whether the new service really needs persistence.
+1. Choose the right flavor when you bootstrap:
+   - `persistence` for services with database ownership
+   - `generic` for simpler services without JPA or Liquibase
+2. Prefer passing `-ServiceSlug` / `-BasePackage` or the equivalent bash arguments when you bootstrap the project.
+3. Review [ApplicationMetadata.java](src/main/java/com/template/service/config/ApplicationMetadata.java) for service-specific values.
+4. Review [application.yaml](src/main/resources/application.yaml) for environment-specific defaults.
+5. If you chose the persistence flavor, replace the empty Liquibase starter changelog with your actual schema plan.
 
 ## Default Behavior Notes
 
