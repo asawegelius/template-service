@@ -36,18 +36,21 @@ cd temp-template-service
 Linux/macOS/WSL:
 
 ```bash
-./bootstrap-new-project.sh "Your New Project Name"
+./bootstrap-new-project.sh "Your New Project Name" "your-service-slug" "com.example.your.service"
 ```
 
 Windows PowerShell:
 
 ```powershell
-./bootstrap-new-project.ps1 "Your New Project Name"
+./bootstrap-new-project.ps1 "Your New Project Name" -ServiceSlug "your-service-slug" -BasePackage "com.example.your.service"
 ```
 
 The bootstrap script:
 
 - removes the old Git history
+- can derive a sensible service slug and base package if you do not pass them explicitly
+- moves the Java and test source trees to the chosen base package
+- renames the application entrypoint and smoke-test classes to match the chosen service slug
 - records template provenance in `template-origin.properties`
 - records the source template tag or commit in the new `README.md`
 - replaces the README with a new project title
@@ -66,8 +69,8 @@ git push -u origin main
 
 ## First Things To Change
 
-1. Replace package name `com.template.service` with your real package.
-2. Update values in [TemplateServiceConfig.java](src/main/java/com/template/service/config/TemplateServiceConfig.java).
+1. Prefer passing `-ServiceSlug` / `-BasePackage` or the equivalent bash arguments when you bootstrap the project.
+2. Review [ApplicationMetadata.java](src/main/java/com/template/service/config/ApplicationMetadata.java) for service-specific values.
 3. Review [application.yaml](src/main/resources/application.yaml) for environment-specific defaults.
 4. Replace the empty Liquibase starter changelog with your actual schema plan.
 5. Add or remove dependencies based on whether the new service really needs persistence.

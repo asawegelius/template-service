@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Cross-platform GitHub Actions test matrix for Ubuntu and Windows
 - Machine-readable `template-origin.properties` output from the bootstrap scripts
+- Optional bootstrap arguments for service slug and base package
+- Automatic source-tree and application-class retargeting during bootstrap
 - GitHub Actions build workflow
 - Dependabot configuration
 - Liquibase starter changelog
@@ -20,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Bootstrap scripts now write both a human-readable README note and a machine-readable provenance file
+- The template codebase uses more generic application class names so generated projects need less manual cleanup
 - Updated to Spring Boot 3.5.11
 - Updated springdoc to 2.8.17
 - Updated Spock to 2.4 for Groovy 4
