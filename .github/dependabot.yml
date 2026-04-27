@@ -3,9 +3,19 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    ignore:
+      - dependency-name: "org.springframework.boot"
+        update-types:
+          - "version-update:semver-major"
+      - dependency-name: "org.springdoc:*"
+        update-types:
+          - "version-update:semver-major"
+      - dependency-name: "org.spockframework:*"
+        update-types:
+          - "version-update:semver-major"
