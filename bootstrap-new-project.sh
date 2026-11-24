@@ -142,6 +142,7 @@ done < <(find "$MAIN_JAVA_PATH" "$TEST_GROOVY_PATH" -type f 2>/dev/null)
 
 replace_in_file "build.gradle" "group = 'com.template'" "group = '$BASE_PACKAGE'"
 replace_in_file "settings.gradle" "rootProject.name = 'template-service'" "rootProject.name = '$SERVICE_SLUG'"
+replace_in_file "src/main/resources/application.yaml" "com.template.service" "$BASE_PACKAGE"
 replace_in_file "src/main/resources/application.yaml" '${SERVICE_NAME:template-service}' "\${SERVICE_NAME:$SERVICE_SLUG}"
 replace_in_file "src/main/resources/application.yaml" 'jdbc:h2:mem:template-service' "jdbc:h2:mem:$SERVICE_SLUG"
 replace_in_file "$MAIN_JAVA_PATH/config/ApplicationMetadata.java" 'public static final String SERVICE_NAME = "template-service";' "public static final String SERVICE_NAME = \"$SERVICE_SLUG\";"
@@ -154,7 +155,9 @@ replace_in_file "$TEST_GROOVY_PATH/$APPLICATION_SPEC_NAME.groovy" 'class Applica
 if [ "$TEMPLATE_FLAVOR" = "generic" ]; then
   remove_template_section "build.gradle" "// TEMPLATE-PERSISTENCE-START" "// TEMPLATE-PERSISTENCE-END"
   remove_template_section "src/main/resources/application.yaml" "# TEMPLATE-PERSISTENCE-START" "# TEMPLATE-PERSISTENCE-END"
-  rm -rf src/main/resources/db
+  remove_template_section "AGENTS.md" "<!-- TEMPLATE-PERSISTENCE-START -->" "<!-- TEMPLATE-PERSISTENCE-END -->"
+  rm -rf src/main/resources/db "$MAIN_JAVA_PATH/search" "$TEST_GROOVY_PATH/search"
+  rm -f .github/workflows/database-search.yml docs/database-search.md
 fi
 
 cat > template-origin.properties <<EOF
@@ -184,10 +187,15 @@ Template provenance is recorded in \`template-origin.properties\`.
 Replace this README with project-specific documentation.
 EOF
 
+if [ "$TEMPLATE_FLAVOR" = "persistence" ]; then
+  printf '\n%s\n' 'See [Database search](docs/database-search.md) for the starter contract and verification.' >> README.md
+fi
+
 echo "New README.md created."
 
 git init
 git add .
+git add --chmod=+x gradlew
 git commit -m "Initial commit for $PROJECT_NAME"
 
 echo "Git repository initialized."

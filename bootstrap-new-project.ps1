@@ -256,9 +256,22 @@ Replace-InFile $renamedApplicationSpecFile "class ApplicationSpec extends Specif
 if ($TemplateFlavor -eq "generic") {
     Remove-TemplateSection "build.gradle" "// TEMPLATE-PERSISTENCE-START" "// TEMPLATE-PERSISTENCE-END"
     Remove-TemplateSection "src/main/resources/application.yaml" "# TEMPLATE-PERSISTENCE-START" "# TEMPLATE-PERSISTENCE-END"
+    Remove-TemplateSection "AGENTS.md" "<!-- TEMPLATE-PERSISTENCE-START -->" "<!-- TEMPLATE-PERSISTENCE-END -->"
 
-    if (Test-Path "src/main/resources/db") {
-        Remove-Item -Recurse -Force "src/main/resources/db"
+    $workspacePrefix = (Resolve-Path ".").Path + [IO.Path]::DirectorySeparatorChar
+    foreach ($directory in @("src/main/resources/db", (Join-Path $mainJavaPath "search"), (Join-Path $testGroovyPath "search"))) {
+        if (Test-Path -LiteralPath $directory) {
+            $resolvedDirectory = (Resolve-Path -LiteralPath $directory).Path
+            if (-not $resolvedDirectory.StartsWith($workspacePrefix, [StringComparison]::OrdinalIgnoreCase)) {
+                throw "Cannot remove persistence directory outside the project."
+            }
+            Remove-Item -LiteralPath $resolvedDirectory -Recurse -Force
+        }
+    }
+    foreach ($file in @(".github/workflows/database-search.yml", "docs/database-search.md")) {
+        if (Test-Path -LiteralPath $file) {
+            Remove-Item -LiteralPath $file -Force
+        }
     }
 }
 
@@ -290,11 +303,16 @@ $readmeLines = @(
     "Replace this README with project-specific documentation."
 )
 
+if ($TemplateFlavor -eq "persistence") {
+    $readmeLines += "", "See [Database search](docs/database-search.md) for the starter contract and verification."
+}
+
 [System.IO.File]::WriteAllLines("README.md", $readmeLines, [System.Text.UTF8Encoding]::new($false))
 Write-Output "New README.md created."
 
 git init
 git add .
+git add --chmod=+x gradlew
 git commit -m "Initial commit for $ProjectName"
 
 Write-Output "Git repository initialized."

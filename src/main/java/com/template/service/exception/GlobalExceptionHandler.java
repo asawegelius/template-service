@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, "Bad request", e);
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBinding(BindException e) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, "Bad request", e);
     }
 
@@ -39,6 +45,8 @@ public class GlobalExceptionHandler {
         try {
             if (status.is5xxServerError()) {
                 LOGGER.error("{}: {}", errorCode.value(), exception.getMessage(), exception);
+            } else if (exception instanceof BindException binding) {
+                LOGGER.warn("{}: {} request validation errors", errorCode.value(), binding.getErrorCount());
             } else {
                 LOGGER.warn("{}: {}", errorCode.value(), exception.getMessage());
             }
