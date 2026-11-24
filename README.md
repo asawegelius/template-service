@@ -6,13 +6,13 @@ Reusable Spring Boot service template for Java 21 projects.
 
 - Spring Boot 3.5
 - Java 21 toolchain
-- Spring Web, Validation, Actuator, and Spring Data JPA
-- Liquibase with an empty starter changelog
+- Spring Web, Validation, Actuator, Spring Data JPA, and jOOQ
+- Liquibase with a starter catalog schema and indexed search on PostgreSQL
 - OpenAPI / Swagger UI
 - H2 for local development and PostgreSQL driver for service deployments
 - Structured JSON logging to stdout using Spring Boot's built-in ECS format
 - Request correlation ID starter with `X-Correlation-Id` propagation
-- Spock-based test setup
+- Spock-based test setup with a PostgreSQL integration and performance job
 - Bootstrap support for both `persistence` and `generic` service flavors
 - Bootstrap scripts for creating a fresh project from the template
 - GitHub Actions build workflow and Dependabot configuration
@@ -39,7 +39,7 @@ cd temp-template-service
 Linux/macOS/WSL:
 
 ```bash
-./bootstrap-new-project.sh "Your New Project Name" "your-service-slug" "com.example.your.service" "persistence"
+bash ./bootstrap-new-project.sh "Your New Project Name" "your-service-slug" "com.example.your.service" "persistence"
 ```
 
 Windows PowerShell:
@@ -51,7 +51,7 @@ Windows PowerShell:
 The bootstrap script:
 
 - supports two bootstrap flavors:
-  - `persistence` keeps JPA, Liquibase, datasource config, and the starter changelog
+  - `persistence` keeps JPA, jOOQ, Liquibase, datasource config, and the database search example
   - `generic` removes the persistence-specific dependencies and config during bootstrap
 - removes the old Git history
 - can derive a sensible service slug and base package if you do not pass them explicitly
@@ -81,7 +81,7 @@ git push -u origin main
 2. Prefer passing `-ServiceSlug` / `-BasePackage` or the equivalent bash arguments when you bootstrap the project.
 3. Review [ApplicationMetadata.java](src/main/java/com/template/service/config/ApplicationMetadata.java) for service-specific values.
 4. Review [application.yaml](src/main/resources/application.yaml) for environment-specific defaults.
-5. If you chose the persistence flavor, replace the empty Liquibase starter changelog with your actual schema plan.
+5. If you chose the persistence flavor, adapt the sample catalog, Liquibase changelog, and tests to your domain. See [Database search](docs/database-search.md) for the API contract and verification commands.
 
 ## Default Behavior Notes
 
@@ -91,7 +91,7 @@ git push -u origin main
 - Console logs use Spring Boot structured logging in ECS JSON format.
 - Incoming `X-Correlation-Id` is reused when present, otherwise one is generated and returned in the response.
 - Request-scoped `correlation_id`, `http_method`, and `request_path` are added to MDC so they appear in structured logs.
-- Error responses include stable `error_code` and `correlation_id` fields, and the same `error_code` is written to logs through MDC.
+- The global exception handler includes stable `error_code` and `correlation_id` fields in responses and writes the same `error_code` to logs through MDC.
 - The template is meant to be a solid starting point, not a final production policy.
 
 ## License

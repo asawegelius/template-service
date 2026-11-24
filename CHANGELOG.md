@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Database search starter in the persistence flavor with jOOQ filters and projections, offset and cursor pagination, optional counts, and a revision change feed
+- PostgreSQL query-plan, snapshot consistency, and concurrent search tests in CI
+
 ## [1.2.0] - 2026-04-26
 
 ### Added

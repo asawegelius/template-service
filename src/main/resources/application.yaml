@@ -5,7 +5,7 @@ spring:
   # TEMPLATE-PERSISTENCE-START
   datasource:
     url: ${DB_URL:jdbc:h2:mem:template-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE}
-    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    driver-class-name: ${DB_DRIVER:}
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:}
 
@@ -17,6 +17,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/master.yaml
+    parameters:
+      catalogTriggerClass: com.template.service.search.catalog.H2CatalogRevisionTrigger
   # TEMPLATE-PERSISTENCE-END
 
 management:
@@ -29,6 +31,16 @@ management:
       show-details: when_authorized
 
 app:
+  # TEMPLATE-PERSISTENCE-START
+  search:
+    default-page-size: ${SEARCH_DEFAULT_PAGE_SIZE:25}
+    max-page-size: ${SEARCH_MAX_PAGE_SIZE:100}
+    max-offset: ${SEARCH_MAX_OFFSET:10000}
+    changes:
+      poll-interval: ${SEARCH_CHANGES_POLL_INTERVAL:PT2S}
+      timeout: ${SEARCH_CHANGES_TIMEOUT:PT2M}
+      max-subscribers: ${SEARCH_CHANGES_MAX_SUBSCRIBERS:128}
+  # TEMPLATE-PERSISTENCE-END
   logging:
     correlation-id-header: ${CORRELATION_ID_HEADER:X-Correlation-Id}
 
